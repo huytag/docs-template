@@ -1,31 +1,39 @@
 {
   "title": "Tài Liệu Sản Phẩm",
   "subtitle": "Tổng hợp tài liệu và source code cho khách hàng",
-  "githubOrg": "your-org-name",
+  "githubOrg": "huytag",
   "projects": [
     {
-      "id": "project-a",
-      "name": "Project A",
-      "description": "Hệ thống quản lý bán hàng đa kênh",
-      "repo": "your-org/project-a",
-      "icon": "🛒",
-      "tags": ["Web App", "React", "Node.js"]
+      "id": "ai-video-bop",
+      "name": "AI Video Bop",
+      "description": "Công cụ chỉnh sửa và tạo hiệu ứng video tự động bằng AI",
+      "repo": "huytag/AI-video-bop",
+      "icon": "🎬",
+      "tags": ["AI", "Video", "Python"]
     },
     {
-      "id": "project-b",
-      "name": "Project B",
-      "description": "Mobile app đặt đồ ăn trực tuyến",
-      "repo": "your-org/project-b",
-      "icon": "📱",
-      "tags": ["Mobile", "Flutter", "Dart"]
+      "id": "ai-mass-video-creator",
+      "name": "AI Mass Video Creator",
+      "description": "Tạo hàng loạt video tự động với AI, hỗ trợ sinh nội dung số lượng lớn",
+      "repo": "huytag/AI-Mass-Video-Creator",
+      "icon": "📽️",
+      "tags": ["AI", "Video", "Automation", "Python"]
     },
     {
-      "id": "project-c",
-      "name": "Project C",
-      "description": "Dashboard phân tích dữ liệu thời gian thực",
-      "repo": "your-org/project-c",
-      "icon": "📊",
-      "tags": ["Dashboard", "Python", "FastAPI"]
+      "id": "ai-video-automation-tool",
+      "name": "AI Video Automation Tool",
+      "description": "Tool tự động hóa quy trình xử lý và sản xuất video bằng AI",
+      "repo": "huytag/AI-Video-Automation-Tool",
+      "icon": "🤖",
+      "tags": ["AI", "Video", "Automation", "Python"]
+    },
+    {
+      "id": "face-blur-tool",
+      "name": "Face Blur Tool",
+      "description": "Công cụ tự động làm mờ khuôn mặt trong video và hình ảnh",
+      "repo": "huytag/face_blur_tool",
+      "icon": "👤",
+      "tags": ["Computer Vision", "Privacy", "Python"]
     }
   ]
 }

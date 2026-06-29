@@ -14,9 +14,17 @@
     return res.json();
   }
 
+  function getToken() {
+    const hash = window.location.hash;
+    const match = hash && hash.match(/token=([^&]+)/);
+    return match ? match[1] : null;
+  }
+
   async function fetchLatestRelease(repo) {
+    const token = getToken();
+    const headers = token ? { Authorization: `token ${token}` } : {};
     const url = `https://api.github.com/repos/${repo}/releases/latest`;
-    const res = await fetch(url);
+    const res = await fetch(url, { headers });
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
     return res.json();
@@ -38,9 +46,14 @@
     card.className = 'project-card';
     card.dataset.tags = (project.tags || []).join(',');
 
-    const version = release ? release.tag_name : null;
-    const date = release ? new Date(release.published_at).toLocaleDateString('vi-VN') : null;
-    const zipUrl = release ? release.zipball_url : null;
+    let version = release ? release.tag_name : null;
+    let date = release ? new Date(release.published_at).toLocaleDateString('vi-VN') : null;
+    let zipUrl = release ? release.zipball_url : null;
+
+    if (project.downloadUrl) {
+      zipUrl = project.downloadUrl;
+      if (!version) version = 'Bản mới nhất';
+    }
 
     card.innerHTML = `
       <div class="project-icon">${project.icon || '📦'}</div>
@@ -51,8 +64,8 @@
       </div>
       <div class="release-info">
         ${version
-          ? `<span class="release-version">${version}</span><span class="release-date">${date}</span>`
-          : `<span class="no-release">Chưa có release</span>`}
+          ? `<span class="release-version">${version}</span><span class="release-date">${date || ''}</span>`
+          : `<span class="no-release">Chưa có bản phát hành</span>`}
       </div>
       <div class="project-actions">
         <a href="https://github.com/${project.repo}" class="btn btn-secondary" target="_blank" rel="noopener">
