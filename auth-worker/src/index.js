@@ -172,11 +172,10 @@ export default {
         const { name, description, repo, icon, version, download_url, tags } = await request.json();
         const existing = await DB.prepare('SELECT id FROM projects WHERE id = ?').bind(projectId).first();
         if (!existing) return json({ error: 'Project not found' }, 404, cors);
-        const newId = name ? slugify(name) : projectId;
         await DB.prepare(
-          'UPDATE projects SET id=?, name=?, description=?, repo=?, icon=?, version=?, download_url=?, tags=?, updated_at=datetime(\'now\') WHERE id=?'
-        ).bind(newId, name || '', description || '', repo || '', icon || '📦', version || '', download_url || '', JSON.stringify(tags || []), projectId).run();
-        const project = await DB.prepare('SELECT * FROM projects WHERE id = ?').bind(newId).first();
+          'UPDATE projects SET name=?, description=?, repo=?, icon=?, version=?, download_url=?, tags=?, updated_at=datetime(\'now\') WHERE id=?'
+        ).bind(name || '', description || '', repo || '', icon || '📦', version || '', download_url || '', JSON.stringify(tags || []), projectId).run();
+        const project = await DB.prepare('SELECT * FROM projects WHERE id = ?').bind(projectId).first();
         return json({ success: true, project: { ...project, tags: JSON.parse(project.tags || '[]') } }, 200, cors);
       }
 

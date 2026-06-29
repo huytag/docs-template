@@ -401,6 +401,12 @@ body {
   color: #1a1a2e;
 }
 
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 /* Admin Table */
 .admin-table {
   width: 100%;

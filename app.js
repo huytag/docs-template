@@ -206,7 +206,10 @@ const TOKEN_KEY = 'auth_token';
       const enhanced = await Promise.all(allProjects.map(async (p) => {
         if (!p.repo) return p;
         try {
-          const releaseRes = await fetch(`https://api.github.com/repos/${p.repo}/releases/latest`);
+          const ghToken = localStorage.getItem('github_token');
+          const headers = { 'User-Agent': 'docs-template/1.0' };
+          if (ghToken) headers['Authorization'] = `Bearer ${ghToken}`;
+          const releaseRes = await fetch(`https://api.github.com/repos/${p.repo}/releases/latest`, { headers });
           if (releaseRes.ok) {
             const release = await releaseRes.json();
             const assetUrl = release.assets?.[0]?.browser_download_url;
@@ -263,9 +266,9 @@ const TOKEN_KEY = 'auth_token';
   // --- GitHub Sync ---
 
   async function fetchGitHubRepo(repo) {
-    const token = getToken();
-    const headers = {};
-    if (token) headers['Authorization'] = `token ${token}`;
+    const ghToken = localStorage.getItem('github_token');
+    const headers = { 'User-Agent': 'docs-template/1.0' };
+    if (ghToken) headers['Authorization'] = `Bearer ${ghToken}`;
     const [repoRes, readmeRes] = await Promise.all([
       fetch(`https://api.github.com/repos/${repo}`, { headers }),
       fetch(`https://api.github.com/repos/${repo}/readme`, { headers }).catch(() => null),
@@ -372,6 +375,19 @@ const TOKEN_KEY = 'auth_token';
     const container = document.getElementById('project-form-container');
     const cancelBtn = document.getElementById('pf-cancel');
     const addBtn = document.getElementById('btn-add-project');
+
+    document.getElementById('btn-set-gh-token').addEventListener('click', () => {
+      const current = localStorage.getItem('github_token') || '';
+      const token = prompt('Nhập GitHub Personal Access Token (để fetch repo private):', current);
+      if (token === null) return;
+      if (token.trim()) {
+        localStorage.setItem('github_token', token.trim());
+        alert('Đã lưu GitHub Token!');
+      } else {
+        localStorage.removeItem('github_token');
+        alert('Đã xoá GitHub Token!');
+      }
+    });
 
     addBtn.addEventListener('click', () => {
       form.reset();
