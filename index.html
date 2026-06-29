@@ -21,32 +21,123 @@
     </div>
   </div>
 
-  <header class="header">
-    <div class="container">
-      <h1 id="page-title">Tài Liệu Sản Phẩm</h1>
-      <p id="page-subtitle" style="display:none;"></p>
-    </div>
-  </header>
+  <div id="app" style="display:none;">
+    <header class="header">
+      <div class="container header-inner">
+        <div>
+          <h1 id="page-title">Tài Liệu Sản Phẩm</h1>
+          <p id="page-subtitle" style="display:none;"></p>
+        </div>
+        <div class="user-bar">
+          <span id="user-info" class="user-info"></span>
+          <button id="logout-btn" class="btn btn-logout">Đăng xuất</button>
+        </div>
+      </div>
+    </header>
 
-  <main class="container">
-    <div class="controls">
-      <input type="text" id="search" placeholder="Tìm kiếm dự án..." class="search-box">
-      <select id="filter-tag" class="filter-select">
-        <option value="all">Tất cả</option>
-      </select>
+    <div id="admin-panel" class="admin-panel" style="display:none;">
+      <div class="container">
+        <div class="admin-tabs">
+          <button class="admin-tab active" data-tab="projects">Quản lý Dự án</button>
+          <button class="admin-tab" data-tab="users">Quản lý Người dùng</button>
+        </div>
+
+        <div id="tab-projects" class="admin-tab-content active">
+          <div class="admin-toolbar">
+            <h2>Dự án</h2>
+            <button id="btn-add-project" class="btn btn-primary">+ Thêm dự án</button>
+          </div>
+          <div id="project-form-container" class="form-container" style="display:none;">
+            <form id="project-form">
+              <input type="hidden" id="pf-id">
+              <div class="form-row">
+                <input type="text" id="pf-name" placeholder="Tên dự án *" required>
+                <input type="text" id="pf-version" placeholder="Phiên bản (vd: 1.0.0)">
+              </div>
+              <div class="form-row">
+                <input type="text" id="pf-repo" placeholder="GitHub repo (vd: huytag/AI-video-bop)">
+                <input type="text" id="pf-icon" placeholder="Icon (emoji)">
+              </div>
+              <div class="form-row">
+                <input type="text" id="pf-download-url" placeholder="Link tải xuống (Google Drive...)">
+                <input type="text" id="pf-tags" placeholder="Tags (cách nhau bằng dấu phẩy)">
+              </div>
+              <textarea id="pf-description" placeholder="Mô tả dự án"></textarea>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="pf-submit">Lưu</button>
+                <button type="button" class="btn btn-secondary" id="pf-cancel">Huỷ</button>
+              </div>
+            </form>
+          </div>
+          <div id="projects-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Tên</th>
+                  <th>Phiên bản</th>
+                  <th>Tags</th>
+                  <th>Ngày tạo</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="projects-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-users" class="admin-tab-content">
+          <div class="admin-toolbar">
+            <h2>Người dùng</h2>
+          </div>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Vai trò</th>
+                <th>Ngày tạo</th>
+                <th>Phân quyền dự án</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+
+          <div id="perm-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h3>Phân quyền dự án cho <span id="perm-username"></span></h3>
+                <button class="modal-close" id="perm-close">&times;</button>
+              </div>
+              <div class="modal-body">
+                <div id="perm-checklist"></div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" id="perm-save">Lưu</button>
+                <button class="btn btn-secondary" id="perm-cancel">Huỷ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="projects-grid" class="projects-grid">
-      <div class="loading">Đang tải dữ liệu...</div>
-    </div>
-  </main>
+    <main id="customer-view" class="container">
+      <div class="controls">
+        <input type="text" id="search" placeholder="Tìm kiếm dự án..." class="search-box">
+        <select id="filter-tag" class="filter-select">
+          <option value="all">Tất cả</option>
+        </select>
+      </div>
+      <div id="projects-grid" class="projects-grid">
+        <div class="loading">Đang tải dữ liệu...</div>
+      </div>
+    </main>
 
-  <footer class="footer">
-    <div class="container">
+    <footer class="footer">
+      <div class="container">
       <p>&copy; 2026 - Product by huytag</p>
-      <p class="footer-signature">Built with ❤️ for customers</p>
-    </div>
-  </footer>
+      </div>
+    </footer>
+  </div>
 
   <script src="app.js"></script>
 </body>
