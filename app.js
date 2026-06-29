@@ -212,7 +212,7 @@ const TOKEN_KEY = 'auth_token';
           const releaseRes = await fetch(`https://api.github.com/repos/${p.repo}/releases/latest`, { headers });
           if (releaseRes.ok) {
             const release = await releaseRes.json();
-            const assetUrl = release.assets?.[0]?.browser_download_url;
+            const assetUrl = release.assets?.[0]?.browser_download_url || release.zipball_url;
             return {
               ...p,
               version: p.version || release.tag_name || '',
@@ -283,7 +283,7 @@ const TOKEN_KEY = 'auth_token';
       description: repoData.description || '',
       tags: repoData.topics || [],
       version: releaseData?.tag_name || '',
-      download_url: releaseData?.assets?.[0]?.browser_download_url || '',
+      download_url: releaseData?.assets?.[0]?.browser_download_url || releaseData?.zipball_url || '',
       readme_content: readmeData ? atob(readmeData.content) : '',
     };
   }
