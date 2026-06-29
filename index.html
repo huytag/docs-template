@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tài Liệu Sản Phẩm</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <h1 id="page-title">Tài Liệu Sản Phẩm</h1>
+      <p id="page-subtitle">Tổng hợp tài liệu và source code cho khách hàng</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="controls">
+      <input type="text" id="search" placeholder="Tìm kiếm dự án..." class="search-box">
+      <select id="filter-tag" class="filter-select">
+        <option value="all">Tất cả</option>
+      </select>
+    </div>
+
+    <div id="projects-grid" class="projects-grid">
+      <div class="loading">Đang tải dữ liệu...</div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 - Tài liệu được cập nhật tự động từ GitHub</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

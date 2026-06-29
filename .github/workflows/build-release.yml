@@ -1,0 +1,37 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Create archive
+        run: |
+          mkdir -p dist
+          zip -r "release-${{ github.ref_name }}.zip" dist/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "release-*.zip"
+          generate_release_notes: true

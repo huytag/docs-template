@@ -1,0 +1,31 @@
+{
+  "title": "Tài Liệu Sản Phẩm",
+  "subtitle": "Tổng hợp tài liệu và source code cho khách hàng",
+  "githubOrg": "your-org-name",
+  "projects": [
+    {
+      "id": "project-a",
+      "name": "Project A",
+      "description": "Hệ thống quản lý bán hàng đa kênh",
+      "repo": "your-org/project-a",
+      "icon": "🛒",
+      "tags": ["Web App", "React", "Node.js"]
+    },
+    {
+      "id": "project-b",
+      "name": "Project B",
+      "description": "Mobile app đặt đồ ăn trực tuyến",
+      "repo": "your-org/project-b",
+      "icon": "📱",
+      "tags": ["Mobile", "Flutter", "Dart"]
+    },
+    {
+      "id": "project-c",
+      "name": "Project C",
+      "description": "Dashboard phân tích dữ liệu thời gian thực",
+      "repo": "your-org/project-c",
+      "icon": "📊",
+      "tags": ["Dashboard", "Python", "FastAPI"]
+    }
+  ]
+}
