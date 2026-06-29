@@ -57,7 +57,7 @@ const TOKEN_KEY = 'auth_token';
     appEl.style.display = 'flex';
     appEl.style.flexDirection = 'column';
     appEl.style.minHeight = '100vh';
-    userInfo.textContent = `${user.username} (${user.role === 'admin' ? 'Admin' : 'Khách hàng'})`;
+    userInfo.textContent = user.username;
 
     if (user.role === 'admin') {
       adminPanel.style.display = 'block';
@@ -314,26 +314,27 @@ const TOKEN_KEY = 'auth_token';
   async function loadUsersTable() {
     try {
       const data = await api('/api/admin/users');
-      const tbody = document.getElementById('users-tbody');
-      tbody.innerHTML = '';
+      const grid = document.getElementById('users-grid');
+      grid.innerHTML = '';
       (data.users || []).forEach(u => {
-        const tr = document.createElement('tr');
-        const roleBadge = u.role === 'admin'
-          ? '<span class="badge badge-admin">Admin</span>'
-          : '<span class="badge badge-customer">Customer</span>';
-        tr.innerHTML = `
-          <td>${u.username}</td>
-          <td>${roleBadge}</td>
-          <td>${u.created_at ? new Date(u.created_at).toLocaleDateString('vi-VN') : '-'}</td>
-          <td>
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        const roleClass = u.role === 'admin' ? 'badge-admin' : 'badge-customer';
+        const roleLabel = u.role === 'admin' ? 'Admin' : 'Customer';
+        card.innerHTML = `
+          <div class="user-card-avatar">${u.username.charAt(0).toUpperCase()}</div>
+          <div class="user-card-name">${u.username}</div>
+          <div class="user-card-role"><span class="badge ${roleClass}">${roleLabel}</span></div>
+          <div class="user-card-date">${u.created_at ? new Date(u.created_at).toLocaleDateString('vi-VN') : ''}</div>
+          <div class="user-card-action">
             ${u.role !== 'admin'
-              ? `<button class="btn btn-sm btn-secondary" onclick="openPerm(${u.id}, '${u.username}')">Phân quyền</button>`
-              : '<span class="text-muted">Full quyền</span>'}
-          </td>`;
-        tbody.appendChild(tr);
+              ? `<button class="btn btn-primary btn-sm" onclick="openPerm(${u.id}, '${u.username}')">Phân quyền</button>`
+              : '<span class="text-muted">Toàn quyền</span>'}
+          </div>`;
+        grid.appendChild(card);
       });
     } catch (err) {
-      document.getElementById('users-tbody').innerHTML = `<tr><td colspan="4">Lỗi: ${err.message}</td></tr>`;
+      document.getElementById('users-grid').innerHTML = `<div class="error">Lỗi: ${err.message}</div>`;
     }
   }
 
