@@ -1,6 +1,5 @@
 {
   "title": "Tài Liệu Sản Phẩm",
-  "subtitle": "Tổng hợp tài liệu và source code cho khách hàng",
   "githubOrg": "huytag",
   "projects": [
     {
@@ -9,6 +8,8 @@
       "description": "Công cụ chỉnh sửa và tạo hiệu ứng video tự động bằng AI",
       "repo": "huytag/AI-video-bop",
       "icon": "🎬",
+      "version": "1.0.4",
+      "downloadUrl": "https://drive.google.com/file/d/1bycbmIs0wxhCchWo7lEc64wjrG0NBMKt/view?usp=drive_link",
       "tags": ["AI", "Video", "Python"]
     },
     {
@@ -17,6 +18,8 @@
       "description": "Tạo hàng loạt video tự động với AI, hỗ trợ sinh nội dung số lượng lớn",
       "repo": "huytag/AI-Mass-Video-Creator",
       "icon": "📽️",
+      "version": "2.0.3",
+      "downloadUrl": "https://drive.google.com/file/d/1tYJomWRLJde6eRhUMfpyc6QMutQuXZZq/view?usp=drive_link",
       "tags": ["AI", "Video", "Automation", "Python"]
     },
     {

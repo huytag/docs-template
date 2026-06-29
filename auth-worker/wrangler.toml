@@ -1,0 +1,12 @@
+name = "docs-auth-worker"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "docs_auth_db"
+database_id = "1a26af32-95ff-45a9-b5ad-3cc9de8cd810"
+
+[vars]
+JWT_SECRET = "0b44b5c372bbe0951167944822e969a56a3183cbb59d02767c46b1fd13a8ce5d"
+ADMIN_KEY = "37ce0542f2226bc1ec1bb610adb9b8cdd01220545bde3f629383280314e2ffc4"
