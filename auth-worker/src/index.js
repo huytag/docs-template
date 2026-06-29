@@ -221,6 +221,20 @@ export default {
       return json({ error: 'Method not allowed' }, 405, cors);
     }
 
+    if (path === '/api/change-password') {
+      const user = await getUserFromToken(request.headers.get('Authorization'), secret, DB);
+      if (!user) return json({ error: 'Unauthorized' }, 401, cors);
+      if (method !== 'PUT') return json({ error: 'Method not allowed' }, 405, cors);
+      const { current_password, new_password } = await request.json();
+      if (!current_password || !new_password || new_password.length < 6) return json({ error: 'Current password required, new password min 6 chars' }, 400, cors);
+      const dbUser = await DB.prepare('SELECT password_hash FROM users WHERE id = ?').bind(user.id).first();
+      const valid = await verifyPassword(current_password, dbUser.password_hash);
+      if (!valid) return json({ error: 'Current password is incorrect' }, 401, cors);
+      const hash = await hashPassword(new_password);
+      await DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?').bind(hash, user.id).run();
+      return json({ success: true, message: 'Password updated' }, 200, cors);
+    }
+
     return json({ error: 'Not found' }, 404, cors);
   },
 };

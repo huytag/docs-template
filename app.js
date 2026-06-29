@@ -101,6 +101,45 @@ const TOKEN_KEY = 'auth_token';
     showAuth();
   });
 
+  // ===== CHANGE PASSWORD =====
+
+  const changePwBtn = document.getElementById('change-pw-btn');
+  const cpwModal = document.getElementById('change-pw-modal');
+  const cpwForm = document.getElementById('change-pw-form');
+  const cpwError = document.getElementById('cpw-error');
+
+  changePwBtn.addEventListener('click', () => {
+    cpwError.textContent = '';
+    cpwForm.reset();
+    cpwModal.style.display = 'flex';
+  });
+
+  document.getElementById('cpw-close').addEventListener('click', () => { cpwModal.style.display = 'none'; });
+  document.getElementById('cpw-cancel').addEventListener('click', () => { cpwModal.style.display = 'none'; });
+
+  cpwForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    cpwError.textContent = '';
+    const current = document.getElementById('cpw-current').value;
+    const newPw = document.getElementById('cpw-new').value;
+    const btn = document.getElementById('cpw-submit');
+    btn.disabled = true;
+    btn.textContent = 'Đang lưu...';
+    try {
+      await api('/api/change-password', {
+        method: 'PUT',
+        body: JSON.stringify({ current_password: current, new_password: newPw }),
+      });
+      cpwModal.style.display = 'none';
+      alert('Đổi mật khẩu thành công!');
+    } catch (err) {
+      cpwError.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Lưu';
+    }
+  });
+
   // ===== CUSTOMER VIEW =====
 
   function renderCard(project) {
@@ -164,15 +203,32 @@ const TOKEN_KEY = 'auth_token';
       allProjects = data.projects || [];
       if (titleEl) titleEl.textContent = 'Tài Liệu Sản Phẩm';
 
-      populateFilter(allProjects);
+      const enhanced = await Promise.all(allProjects.map(async (p) => {
+        if (!p.repo) return p;
+        try {
+          const releaseRes = await fetch(`https://api.github.com/repos/${p.repo}/releases/latest`);
+          if (releaseRes.ok) {
+            const release = await releaseRes.json();
+            const assetUrl = release.assets?.[0]?.browser_download_url;
+            return {
+              ...p,
+              version: p.version || release.tag_name || '',
+              download_url: p.download_url || assetUrl || '',
+            };
+          }
+        } catch {}
+        return p;
+      }));
+
+      populateFilter(enhanced);
       projectsGrid.innerHTML = '';
 
-      if (allProjects.length === 0) {
+      if (enhanced.length === 0) {
         projectsGrid.innerHTML = '<div class="loading">Chưa có dự án nào được phân quyền</div>';
         return;
       }
 
-      allProjects.forEach(p => projectsGrid.appendChild(renderCard(p)));
+      enhanced.forEach(p => projectsGrid.appendChild(renderCard(p)));
       filterCards();
     } catch (err) {
       projectsGrid.innerHTML = `<div class="error">Lỗi tải dữ liệu: ${err.message}</div>`;
@@ -190,6 +246,7 @@ const TOKEN_KEY = 'auth_token';
     loadUsersTable();
     setupProjectForm();
     setupPermModal();
+    setupPreview();
   }
 
   function setupTabs() {
@@ -201,6 +258,31 @@ const TOKEN_KEY = 'auth_token';
         document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
       });
     });
+  }
+
+  // --- GitHub Sync ---
+
+  async function fetchGitHubRepo(repo) {
+    const token = getToken();
+    const headers = {};
+    if (token) headers['Authorization'] = `token ${token}`;
+    const [repoRes, readmeRes] = await Promise.all([
+      fetch(`https://api.github.com/repos/${repo}`, { headers }),
+      fetch(`https://api.github.com/repos/${repo}/readme`, { headers }).catch(() => null),
+    ]);
+    if (!repoRes.ok) throw new Error('Cannot fetch repo: ' + repoRes.status);
+    const repoData = await repoRes.json();
+    const readmeData = readmeRes?.ok ? await readmeRes.json() : null;
+    const releaseRes = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, { headers }).catch(() => null);
+    const releaseData = releaseRes?.ok ? await releaseRes.json() : null;
+    return {
+      name: repoData.name || '',
+      description: repoData.description || '',
+      tags: repoData.topics || [],
+      version: releaseData?.tag_name || '',
+      download_url: releaseData?.assets?.[0]?.browser_download_url || '',
+      readme_content: readmeData ? atob(readmeData.content) : '',
+    };
   }
 
   // --- Projects CRUD ---
@@ -219,6 +301,7 @@ const TOKEN_KEY = 'auth_token';
           <td>${p.created_at ? new Date(p.created_at).toLocaleDateString('vi-VN') : '-'}</td>
           <td class="actions-cell">
             <button class="btn btn-sm btn-secondary" onclick="editProject('${p.id}')">Sửa</button>
+            <button class="btn btn-sm btn-secondary" onclick="syncProject('${p.id}')">Đồng bộ</button>
             <button class="btn btn-sm btn-danger" onclick="deleteProject('${p.id}')">Xoá</button>
           </td>`;
         tbody.appendChild(tr);
@@ -258,6 +341,32 @@ const TOKEN_KEY = 'auth_token';
     }
   };
 
+  window.syncProject = async (id) => {
+    if (!confirm('Đồng bộ dữ liệu từ GitHub?')) return;
+    try {
+      const data = await api('/api/admin/projects');
+      const p = data.projects.find(pr => pr.id === id);
+      if (!p || !p.repo) return alert('Dự án chưa có repo GitHub');
+      const gh = await fetchGitHubRepo(p.repo);
+      await api(`/api/admin/projects/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: gh.name,
+          version: gh.version,
+          tags: gh.tags,
+          description: gh.description,
+          repo: p.repo,
+          icon: p.icon,
+          download_url: gh.download_url || p.download_url,
+        }),
+      });
+      alert('Đồng bộ thành công!');
+      loadProjectsTable();
+    } catch (err) {
+      alert('Lỗi: ' + err.message);
+    }
+  };
+
   function setupProjectForm() {
     const form = document.getElementById('project-form');
     const container = document.getElementById('project-form-container');
@@ -273,6 +382,27 @@ const TOKEN_KEY = 'auth_token';
 
     cancelBtn.addEventListener('click', () => {
       container.style.display = 'none';
+    });
+
+    document.getElementById('btn-fetch-gh').addEventListener('click', async () => {
+      const repo = document.getElementById('pf-repo').value.trim();
+      if (!repo) return alert('Nhập GitHub repo trước (vd: huytag/AI-video-bop)');
+      const btn = document.getElementById('btn-fetch-gh');
+      btn.disabled = true;
+      btn.textContent = 'Đang tải...';
+      try {
+        const gh = await fetchGitHubRepo(repo);
+        document.getElementById('pf-name').value = gh.name;
+        document.getElementById('pf-version').value = gh.version;
+        document.getElementById('pf-tags').value = gh.tags.join(', ');
+        document.getElementById('pf-description').value = gh.description;
+        if (gh.download_url) document.getElementById('pf-download-url').value = gh.download_url;
+      } catch (err) {
+        alert('Lỗi: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Lấy từ GitHub';
+      }
     });
 
     form.addEventListener('submit', async (e) => {
@@ -396,6 +526,57 @@ const TOKEN_KEY = 'auth_token';
       } catch (err) {
         alert('Lỗi: ' + err.message);
       }
+    });
+  }
+
+  // --- Preview ---
+
+  function setupPreview() {
+    const searchInput = document.getElementById('preview-search');
+    const filterSelect = document.getElementById('preview-filter');
+    const grid = document.getElementById('preview-grid');
+
+    async function loadPreview() {
+      try {
+        const data = await api('/api/admin/projects');
+        const projects = data.projects || [];
+        filterSelect.innerHTML = '<option value="all">Tất cả</option>';
+        const tagSet = new Set();
+        projects.forEach(p => (p.tags || []).forEach(t => tagSet.add(t)));
+        [...tagSet].sort().forEach(tag => {
+          const opt = document.createElement('option');
+          opt.value = tag; opt.textContent = tag;
+          filterSelect.appendChild(opt);
+        });
+        grid.innerHTML = '';
+        if (projects.length === 0) {
+          grid.innerHTML = '<div class="loading">Chưa có dự án</div>'; return;
+        }
+        projects.forEach(p => grid.appendChild(renderCard(p)));
+        filterCards();
+      } catch (err) {
+        grid.innerHTML = `<div class="error">Lỗi: ${err.message}</div>`;
+      }
+    }
+
+    function filterCards() {
+      const q = searchInput.value.toLowerCase().trim();
+      const tag = filterSelect.value;
+      grid.querySelectorAll('.project-card').forEach(card => {
+        const name = card.querySelector('.project-name').textContent.toLowerCase();
+        const desc = card.querySelector('.project-desc').textContent.toLowerCase();
+        const tags = (card.dataset.tags || '').toLowerCase();
+        const matchSearch = !q || name.includes(q) || desc.includes(q) || tags.includes(q);
+        const matchTag = tag === 'all' || tags.includes(tag.toLowerCase());
+        card.style.display = matchSearch && matchTag ? '' : 'none';
+      });
+    }
+
+    searchInput.addEventListener('input', filterCards);
+    filterSelect.addEventListener('change', filterCards);
+
+    document.querySelector('[data-tab="preview"]')?.addEventListener('click', () => {
+      setTimeout(loadPreview, 50);
     });
   }
 

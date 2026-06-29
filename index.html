@@ -30,6 +30,7 @@
         </div>
         <div class="user-bar">
           <span id="user-info" class="user-info"></span>
+          <button id="change-pw-btn" class="btn btn-logout">Đổi mật khẩu</button>
           <button id="logout-btn" class="btn btn-logout">Đăng xuất</button>
         </div>
       </div>
@@ -40,6 +41,7 @@
         <div class="admin-tabs">
           <button class="admin-tab active" data-tab="projects">Quản lý Dự án</button>
           <button class="admin-tab" data-tab="users">Quản lý Người dùng</button>
+          <button class="admin-tab" data-tab="preview">Xem trước</button>
         </div>
 
         <div id="tab-projects" class="admin-tab-content active">
@@ -55,7 +57,10 @@
                 <input type="text" id="pf-version" placeholder="Phiên bản (vd: 1.0.0)">
               </div>
               <div class="form-row">
-                <input type="text" id="pf-repo" placeholder="GitHub repo (vd: huytag/AI-video-bop)">
+                <div class="repo-input-wrap">
+                  <input type="text" id="pf-repo" placeholder="GitHub repo (vd: huytag/AI-video-bop)">
+                  <button type="button" id="btn-fetch-gh" class="btn btn-secondary btn-sm">Lấy từ GitHub</button>
+                </div>
                 <input type="text" id="pf-icon" placeholder="Icon (emoji)">
               </div>
               <div class="form-row">
@@ -107,6 +112,41 @@
             </div>
           </div>
         </div>
+
+        <div id="tab-preview" class="admin-tab-content">
+          <div class="admin-toolbar">
+            <h2>Xem trước (giao diện khách hàng)</h2>
+          </div>
+          <div class="controls">
+            <input type="text" id="preview-search" placeholder="Tìm kiếm dự án..." class="search-box">
+            <select id="preview-filter" class="filter-select">
+              <option value="all">Tất cả</option>
+            </select>
+          </div>
+          <div id="preview-grid" class="projects-grid">
+            <div class="loading">Đang tải dữ liệu...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="change-pw-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Đổi mật khẩu</h3>
+          <button class="modal-close" id="cpw-close">&times;</button>
+        </div>
+        <form id="change-pw-form">
+          <div class="modal-body">
+            <div id="cpw-error" class="auth-error"></div>
+            <input type="password" id="cpw-current" placeholder="Mật khẩu hiện tại" required class="modal-input">
+            <input type="password" id="cpw-new" placeholder="Mật khẩu mới (tối thiểu 6 ký tự)" required class="modal-input">
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="cpw-submit">Lưu</button>
+            <button type="button" class="btn btn-secondary" id="cpw-cancel">Huỷ</button>
+          </div>
+        </form>
       </div>
     </div>
 
