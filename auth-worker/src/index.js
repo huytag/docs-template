@@ -45,7 +45,7 @@ async function verifyJWT(token, secret) {
 }
 
 function corsHeaders(origin) {
-  const allowed = !origin || origin?.startsWith('http://localhost') || origin?.includes('.ngothang.tokyo') || origin?.includes('.huytagicloud.workers.dev') || origin?.endsWith('.pages.dev');
+  const allowed = !origin || origin?.startsWith('http://localhost') || origin?.includes('.ngothang.tokyo') || origin?.includes('.ngothang.site') || origin?.includes('.huytagicloud.workers.dev') || origin?.endsWith('.pages.dev');
   return {
     'Access-Control-Allow-Origin': allowed ? origin : 'https://docs-template.ngothang.tokyo',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
