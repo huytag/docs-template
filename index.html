@@ -70,7 +70,22 @@
                 <input type="text" id="pf-download-url" placeholder="Link tải xuống (Google Drive...)">
                 <input type="text" id="pf-tags" placeholder="Tags (cách nhau bằng dấu phẩy)">
               </div>
-              <textarea id="pf-description" placeholder="Mô tả dự án"></textarea>
+              <div class="editor-wrap">
+                <div class="editor-toolbar">
+                  <button type="button" class="editor-btn" data-cmd="bold" title="Bold"><b>B</b></button>
+                  <button type="button" class="editor-btn" data-cmd="italic" title="Italic"><i>I</i></button>
+                  <button type="button" class="editor-btn" data-cmd="underline" title="Underline"><u>U</u></button>
+                  <span class="editor-sep"></span>
+                  <button type="button" class="editor-btn" data-cmd="insertUnorderedList" title="List">•</button>
+                  <button type="button" class="editor-btn" data-cmd="insertOrderedList" title="Numbered">1.</button>
+                  <span class="editor-sep"></span>
+                  <button type="button" class="editor-btn" data-cmd="createLink" title="Link">🔗</button>
+                  <button type="button" class="editor-btn" data-cmd="formatBlock" data-arg="h3" title="Heading">H3</button>
+                  <button type="button" class="editor-btn" data-cmd="formatBlock" data-arg="p" title="Paragraph">¶</button>
+                </div>
+                <div id="pf-description-editor" class="editor-content" contenteditable="true" placeholder="Mô tả dự án..."></div>
+                <textarea id="pf-description" style="display:none;"></textarea>
+              </div>
               <div class="form-actions">
                 <button type="submit" class="btn btn-primary" id="pf-submit">Lưu</button>
                 <button type="button" class="btn btn-secondary" id="pf-cancel">Huỷ</button>
@@ -130,6 +145,16 @@
             <div class="loading">Đang tải dữ liệu...</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div id="detail-modal" class="modal" style="display:none;">
+      <div class="modal-content modal-detail">
+        <div class="modal-header">
+          <h3 id="detail-title"></h3>
+          <button class="modal-close" id="detail-close">&times;</button>
+        </div>
+        <div class="modal-body" id="detail-body"></div>
       </div>
     </div>
 

@@ -147,14 +147,14 @@ export default {
       }
 
       if (method === 'POST') {
-        const { name, description, repo, icon, version, download_url, tags } = await request.json();
+        const { name, description, description_html, repo, icon, version, download_url, tags } = await request.json();
         if (!name) return json({ error: 'Name is required' }, 400, cors);
         const id = slugify(name);
         const existing = await DB.prepare('SELECT id FROM projects WHERE id = ?').bind(id).first();
         if (existing) return json({ error: 'Project ID already exists' }, 409, cors);
         await DB.prepare(
-          'INSERT INTO projects (id, name, description, repo, icon, version, download_url, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-        ).bind(id, name, description || '', repo || '', icon || '📦', version || '', download_url || '', JSON.stringify(tags || [])).run();
+          'INSERT INTO projects (id, name, description, description_html, repo, icon, version, download_url, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        ).bind(id, name, description || '', description_html || '', repo || '', icon || '📦', version || '', download_url || '', JSON.stringify(tags || [])).run();
         const project = await DB.prepare('SELECT * FROM projects WHERE id = ?').bind(id).first();
         return json({ success: true, project: { ...project, tags: JSON.parse(project.tags || '[]') } }, 201, cors);
       }
@@ -169,12 +169,12 @@ export default {
       const projectId = adminProjectMatch[1];
 
       if (method === 'PUT') {
-        const { name, description, repo, icon, version, download_url, tags } = await request.json();
+        const { name, description, description_html, repo, icon, version, download_url, tags } = await request.json();
         const existing = await DB.prepare('SELECT id FROM projects WHERE id = ?').bind(projectId).first();
         if (!existing) return json({ error: 'Project not found' }, 404, cors);
         await DB.prepare(
-          'UPDATE projects SET name=?, description=?, repo=?, icon=?, version=?, download_url=?, tags=?, updated_at=datetime(\'now\') WHERE id=?'
-        ).bind(name || '', description || '', repo || '', icon || '📦', version || '', download_url || '', JSON.stringify(tags || []), projectId).run();
+          'UPDATE projects SET name=?, description=?, description_html=?, repo=?, icon=?, version=?, download_url=?, tags=?, updated_at=datetime(\'now\') WHERE id=?'
+        ).bind(name || '', description || '', description_html || '', repo || '', icon || '📦', version || '', download_url || '', JSON.stringify(tags || []), projectId).run();
         const project = await DB.prepare('SELECT * FROM projects WHERE id = ?').bind(projectId).first();
         return json({ success: true, project: { ...project, tags: JSON.parse(project.tags || '[]') } }, 200, cors);
       }

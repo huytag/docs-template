@@ -696,3 +696,106 @@ body {
 .user-card-action {
   margin-top: 8px;
 }
+
+/* Editor */
+.editor-wrap {
+  margin-bottom: 16px;
+  border: 2px solid #e1e5eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  padding: 6px 8px;
+  background: #f8f9fb;
+  border-bottom: 1px solid #e1e5eb;
+  flex-wrap: wrap;
+}
+
+.editor-btn {
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #333;
+  transition: background 0.15s;
+}
+
+.editor-btn:hover {
+  background: #e1e5eb;
+}
+
+.editor-sep {
+  width: 1px;
+  height: 20px;
+  background: #dde3ec;
+  margin: 0 4px;
+}
+
+.editor-content {
+  min-height: 120px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  outline: none;
+}
+
+.editor-content:empty::before {
+  content: attr(placeholder);
+  color: #bbb;
+}
+
+.editor-content h3 {
+  font-size: 1.1rem;
+  margin: 8px 0 4px;
+}
+
+/* Detail Modal */
+.modal-detail {
+  max-width: 650px;
+}
+
+.detail-desc {
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.detail-desc h3 {
+  font-size: 1.15rem;
+  margin: 12px 0 6px;
+}
+
+.detail-desc ul, .detail-desc ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.detail-desc p {
+  margin: 8px 0;
+}
+
+.detail-desc-plain {
+  color: #555;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.detail-row {
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.detail-row a {
+  color: #0f3460;
+  word-break: break-all;
+}
+
+.btn-detail {
+  font-size: 0.8rem;
+}

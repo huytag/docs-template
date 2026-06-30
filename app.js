@@ -68,6 +68,7 @@ const TOKEN_KEY = 'auth_token';
       customerView.style.display = 'block';
       initCustomer();
     }
+    setupDetailModal();
   }
 
   loginForm.addEventListener('submit', async (e) => {
@@ -166,6 +167,7 @@ const TOKEN_KEY = 'auth_token';
         ${project.download_url
           ? `<a href="${project.download_url}" class="btn btn-primary">Tải xuống</a>`
           : `<button class="btn btn-primary" disabled>Tải xuống</button>`}
+        <button class="btn btn-secondary btn-detail" data-id="${project.id}">Chi tiết</button>
       </div>
     `;
     return card;
@@ -250,6 +252,7 @@ const TOKEN_KEY = 'auth_token';
     setupProjectForm();
     setupPermModal();
     setupPreview();
+    setupEditor();
   }
 
   function setupTabs() {
@@ -327,6 +330,8 @@ const TOKEN_KEY = 'auth_token';
       document.getElementById('pf-download-url').value = p.download_url || '';
       document.getElementById('pf-tags').value = (p.tags || []).join(', ');
       document.getElementById('pf-description').value = p.description || '';
+      const editor = document.getElementById('pf-description-editor');
+      editor.innerHTML = p.description_html || '';
       document.getElementById('pf-submit').textContent = 'Cập nhật';
       document.getElementById('project-form-container').style.display = 'block';
     } catch (err) {
@@ -412,6 +417,7 @@ const TOKEN_KEY = 'auth_token';
         document.getElementById('pf-version').value = gh.version;
         document.getElementById('pf-tags').value = gh.tags.join(', ');
         document.getElementById('pf-description').value = gh.description;
+        document.getElementById('pf-description-editor').innerHTML = gh.readme_content;
         if (gh.download_url) document.getElementById('pf-download-url').value = gh.download_url;
       } catch (err) {
         alert('Lỗi: ' + err.message);
@@ -431,8 +437,9 @@ const TOKEN_KEY = 'auth_token';
       const download_url = document.getElementById('pf-download-url').value.trim();
       const tags = document.getElementById('pf-tags').value.split(',').map(t => t.trim()).filter(Boolean);
       const description = document.getElementById('pf-description').value.trim();
+      const description_html = document.getElementById('pf-description-editor').innerHTML;
 
-      const body = { name, version, repo, icon, download_url, tags, description };
+      const body = { name, version, repo, icon, download_url, tags, description, description_html };
       const btn = form.querySelector('button[type="submit"]');
       btn.disabled = true;
       btn.textContent = 'Đang lưu...';
@@ -593,6 +600,61 @@ const TOKEN_KEY = 'auth_token';
 
     document.querySelector('[data-tab="preview"]')?.addEventListener('click', () => {
       setTimeout(loadPreview, 50);
+    });
+  }
+
+  // --- Rich Text Editor ---
+
+  function setupEditor() {
+    document.querySelectorAll('.editor-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cmd = btn.dataset.cmd;
+        const arg = btn.dataset.arg;
+        if (cmd === 'createLink') {
+          const url = prompt('Nhập link URL:');
+          if (url) document.execCommand(cmd, false, url);
+        } else {
+          document.execCommand(cmd, false, arg || null);
+        }
+        document.getElementById('pf-description-editor').focus();
+      });
+    });
+    document.getElementById('pf-description-editor').addEventListener('input', () => {
+      document.getElementById('pf-description').value = document.getElementById('pf-description-editor').innerText;
+    });
+  }
+
+  // --- Detail Modal ---
+
+  async function openDetail(projectId) {
+    try {
+      const data = await api('/api/admin/projects');
+      const p = data.projects.find(pr => pr.id === projectId);
+      if (!p) return;
+      document.getElementById('detail-title').textContent = `${p.icon || '📦'} ${p.name}`;
+      const body = document.getElementById('detail-body');
+      body.innerHTML = `
+        ${p.description_html
+          ? `<div class="detail-desc">${p.description_html}</div>`
+          : `<p class="detail-desc-plain">${p.description || 'Không có mô tả'}</p>`}
+        ${p.version ? `<div class="detail-row"><strong>Phiên bản:</strong> ${p.version}</div>` : ''}
+        ${p.repo ? `<div class="detail-row"><strong>GitHub:</strong> <a href="https://github.com/${p.repo}" target="_blank">${p.repo}</a></div>` : ''}
+        ${p.download_url ? `<div class="detail-row"><strong>Tải xuống:</strong> <a href="${p.download_url}" target="_blank">${p.download_url}</a></div>` : ''}
+        ${(p.tags || []).length ? `<div class="detail-row"><strong>Tags:</strong> ${p.tags.map(t => `<span class="tag">${t}</span>`).join(' ')}</div>` : ''}
+      `;
+      document.getElementById('detail-modal').style.display = 'flex';
+    } catch (err) {
+      alert('Lỗi: ' + err.message);
+    }
+  }
+
+  function setupDetailModal() {
+    const modal = document.getElementById('detail-modal');
+    document.getElementById('detail-close').addEventListener('click', () => { modal.style.display = 'none'; });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-detail');
+      if (btn) openDetail(btn.dataset.id);
     });
   }
 
